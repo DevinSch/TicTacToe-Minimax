@@ -3,4 +3,4 @@
 
  To compile use the command 'make'
 
-
+By default the computer takes the first turn. 

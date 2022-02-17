@@ -1,93 +1,177 @@
-// Author: Devin Schafthuizen
+ // Author: Devin Schafthuizen
 // Class: CPSC-3750 Artificial Intelligence
 // Date: Feb 7th, 2022
 // Assignment: 2 - TicTacToe
 
 class Board {
+
 public:
-  Board() {}
+  Board() {
+    for (int j = 0; j < 3; j++) {
+      for (int i = 0; i < 3; i++) {
+        board[i][j] = '-';
+      }
+    }
+  }
   ~Board() {}
 
-  Board & operator = (Board copy) {
-    for (int i = 0; i < 10; i++) {
-      this->pos[i] = copy.pos[i];
-    }
-    this->number_moves = copy.number_moves;
-    return *this;
-  }
+  char board[3][3];
+  int number_of_moves = 0;
 
-  void drawTable() {
-    std::cout << "|     |     |     |\n";
-    std::cout << "|  " << pos[1] << "  |  " << pos[2] << "  |  " << pos[3] << "  |\n";
+  void draw() {
+    std::cout << "|     |     |     |\n|  ";
+    if (board[0][0] != '-') {
+      std::cout << board[0][0] << "  |  ";
+    } else {
+      std::cout << '1' << "  |  ";
+    }
+    if (board[1][0] != '-') {
+      std::cout << board[1][0] << "  |  ";
+    } else {
+      std::cout << '2' << "  |  ";
+    }
+    if (board[2][0] != '-') {
+      std::cout << board[2][0] << "  |\n";
+    } else {
+      std::cout << '3' << "  |  \n";
+    }
     std::cout << "|_____|_____|_____|\n";
-    std::cout << "|     |     |     |\n";
-    std::cout << "|  " << pos[4] << "  |  " << pos[5] << "  |  " << pos[6] << "  |\n";
+    std::cout << "|     |     |     |\n|  ";
+
+    if (board[0][1] != '-') {
+      std::cout << board[0][1] << "  |  ";
+    } else {
+      std::cout << '4' << "  |  ";
+    }
+    if (board[1][1] != '-') {
+      std::cout << board[1][1] << "  |  ";
+    } else {
+      std::cout << '5' << "  |  ";
+    }
+    if (board[2][1] != '-') {
+      std::cout << board[2][1] << "  |\n";
+    } else {
+      std::cout << '6' << "  |  \n";
+    }
     std::cout << "|_____|_____|_____|\n";
-    std::cout << "|     |     |     |\n";
-    std::cout << "|  " << pos[7] << "  |  " << pos[8] << "  |  " << pos[9] << "  |\n";
+    std::cout << "|     |     |     |\n|  ";
+
+    if (board[0][2] != '-') {
+      std::cout << board[0][2] << "  |  ";
+    } else {
+      std::cout << '7' << "  |  ";
+    }
+    if (board[1][2] != '-') {
+      std::cout << board[1][2] << "  |  ";
+    } else {
+      std::cout << '8' << "  |  ";
+    }
+    if (board[2][2] != '-') {
+      std::cout << board[2][2] << "  |\n";
+    } else {
+      std::cout << '9' << "  |\n";
+    }
     std::cout << "|_____|_____|_____|\n\n";
   }
 
-  bool updatePos(int position, char player) {
+  bool drawState() {
+    if (number_of_moves == 9) {
+      return true;
+    }
+    return false;
+  }
+
+  bool winningState(char player);
+
+  bool updateSquare(int position, char player) {
     char square = '0' + position;
-    if (pos[position] != square) {
-      std::cout << "Location taken! " << square << " " << player << "\n";
-      return 0; // Already taken!
-    } else if (pos[position] == square) {
-      std::cout << "Square " << square << " to player " << player << "\n";
-      pos[position] = player; // Update whos in the square
-      number_moves++;
-      return 1;
+
+    switch(position) {
+      case 1:
+        if (board[0][0] == '-') {
+          board[0][0] = player;
+          number_of_moves += 1;
+          return 1;
+        }
+        break;
+      case 2:
+        if (board[1][0] == '-') {
+          board[1][0] = player;
+          number_of_moves += 1;
+          return 1;
+        }
+        break;
+      case 3:
+        if (board[2][0] == '-') {
+          board[2][0] = player;
+          number_of_moves += 1;
+          return 1;
+        }
+        break;
+      case 4:
+        if (board[0][1] == '-') {
+          board[0][1] = player;
+          number_of_moves += 1;
+          return 1;
+        }
+        break;
+      case 5:
+        if (board[1][1] == '-') {
+          board[1][1] = player;
+          number_of_moves += 1;
+          return 1;
+        }
+        break;
+      case 6:
+        if (board[2][1] == '-') {
+          board[2][1] = player;
+          number_of_moves += 1;
+          return 1;
+        }
+        break;
+        case 7:
+          if (board[0][2] == '-') {
+            board[0][2] = player;
+            number_of_moves += 1;
+            return 1;
+          }
+          break;
+        case 8:
+          if (board[1][2] == '-') {
+            board[1][2] = player;
+            number_of_moves += 1;
+            return 1;
+          }
+          break;
+        case 9:
+          if (board[2][2] == '-') {
+            board[2][2] = player;
+            number_of_moves += 1;
+            return 1;
+          }
+          break;
+      default:
+        return 0;
+        break;
     }
     return 0;
   }
-
-  int getMoves() {return number_moves;}
-
-  char pos[10] = {'0','1','2','3','4','5','6','7','8','9'};
-  int number_moves = 0;
 };
 
-class GameState {
-public:
-  GameState(Board input) {table = input;}
-  ~GameState() {}
-
-  void draw() {table.drawTable();}
-
-  char winningState();
-
-  bool drawState() {
-    if (table.getMoves() > 8) {
+bool Board::winningState(char player) {
+  for (int i = 0; i < 3; i++) {
+    if (board[i][0] == player && board[i][1] == player && board[i][2] == player) {
       return true;
-    } else {
-      return false;
+    }
+    if (board[0][i] == player && board[1][i] == player && board[2][i] == player) {
+      return true;
     }
   }
-
-//private:
-  Board table;
-private:
-};
-
-char GameState::winningState() {
-  if (table.pos[1] == table.pos[2] && table.pos[2] == table.pos[3]) {
-    return table.pos[1];
-  } else if (table.pos[4] == table.pos[5] && table.pos[5] == table.pos[6]) {
-    return table.pos[4];
-  } else if (table.pos[7] == table.pos[8] && table.pos[8] == table.pos[9]) {
-    return table.pos[7];
-  } else if (table.pos[1] == table.pos[4] && table.pos[4] == table.pos[7]) {
-    return table.pos[1];
-  } else if (table.pos[2] == table.pos[5] && table.pos[5] == table.pos[8]) {
-    return table.pos[2];
-  } else if (table.pos[3] == table.pos[6] && table.pos[6] == table.pos[9]) {
-    return table.pos[3];
-  } else if (table.pos[1] == table.pos[5] && table.pos[5] == table.pos[9]) {
-    return table.pos[1];
-  } else if (table.pos[3] == table.pos[5] && table.pos[5] == table.pos[7]) {
-    return table.pos[3];
-  } else {
-    return 'C';
+  if (board[0][0] == player && board[1][1] == player && board[2][2] == player) {
+    return true;
   }
+  if (board[0][2] == player && board[1][1] == player && board[2][0] == player) {
+    return true;
+  }
+  return false;
 }
