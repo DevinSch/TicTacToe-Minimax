@@ -8,8 +8,8 @@
 
 void getPlayerInput(Board& play_space); // player input
 int minimax(Board& current, int alpha, int beta); // Ai input
-int my_min(Board& current, int alpha, int beta);
-int my_max(Board& current, int alpha, int beta);
+int min_value(Board& current, int alpha, int beta);
+int max_value(Board& current, int alpha, int beta);
 void gameLoop(Board current); // Loops through inputs until game is over
 
 int main() {
@@ -43,7 +43,7 @@ int minimax(Board& current, int alpha, int beta) {
     for (unsigned int j = 0; j < 3; j++) {
         if (current.board[j][i] == '-') {
             current.board[j][i] = 'O';
-            int temp = my_max(current, alpha, beta);
+            int temp = max_value(current, alpha, beta);
             if (temp < bestMove) {
                 bestMove = temp;
                 action = position;
@@ -57,7 +57,7 @@ int minimax(Board& current, int alpha, int beta) {
   return action;
 }
 
-int my_min(Board& current, int alpha, int beta) {
+int min_value(Board& current, int alpha, int beta) {
   if(current.winningState('X') == true) { return 10; }
   else if (current.winningState('O') == true) { return -10; }
   else if (current.drawState()) { return 0; }
@@ -67,15 +67,19 @@ int my_min(Board& current, int alpha, int beta) {
       for (unsigned int j = 0; j < 3; j++) {
           if (current.board[j][i] == '-') {
               current.board[j][i] = 'O';
-              bestMove = std::min(bestMove, my_max(current, alpha, beta));
+              bestMove = std::min(bestMove, max_value(current, alpha, beta));
               current.board[j][i] = '-';
+              if (bestMove <= alpha) {
+                return bestMove;
+              }
+              beta = std::min (beta, bestMove);
           }
       }
   }
   return bestMove;
 }
 
-int my_max(Board& current, int alpha, int beta) {
+int max_value(Board& current, int alpha, int beta) {
   if(current.winningState('X') == true) { return 10; }
   else if (current.winningState('O') == true) { return -10; }
   else if (current.drawState()) { return 0; }
@@ -85,8 +89,12 @@ int my_max(Board& current, int alpha, int beta) {
       for (unsigned int j = 0; j < 3; j++) {
           if (current.board[j][i] == '-') {
               current.board[j][i] = 'X';
-              bestMove = std::max(bestMove, my_min(current, alpha, beta));
+              bestMove = std::max(bestMove, min_value(current, alpha, beta));
               current.board[j][i] = '-';
+              if (bestMove >= beta) {
+                return bestMove;
+              }
+              alpha = std::max(alpha,bestMove);
           }
       }
   }
@@ -95,42 +103,48 @@ int my_max(Board& current, int alpha, int beta) {
 
 void gameLoop(Board current) {
   bool play_on = 1;
+  bool players_turn = false;
   int ai_input;
 
   while(play_on == true) {
 
-    // ai input through minimax
-    ai_input = minimax(current, 0, 0);
-    current.updateSquare(ai_input, 'O');
+    if(players_turn == false) { // Computer turn
+      // ai input through minimax
+      ai_input = minimax(current, 0, 0);
+      current.updateSquare(ai_input, 'O');
 
-    // check for win
-    if (current.winningState('O') == true) {
-      std::cout << "Game over, player O won the game!\n";
-      break;
-    }
+      // check for win
+      if (current.winningState('O') == true) {
+        std::cout << "Game over, player O won the game!\n";
+        break;
+      }
 
-    // check for draw
-    if (current.drawState() == true) {
-      std::cout << "Scratch game, no winner\n";
-      break;
-    }
+      // check for draw
+      if (current.drawState() == true) {
+        std::cout << "Scratch game, no winner\n";
+        break;
+      }
 
-    // print the Board
-    current.draw();
+      players_turn = true;
+    } else { // Is the player turn
+      // print the Board
+      current.draw();
 
-    // Get player input
-    getPlayerInput(current);
+      // Get player input
+      getPlayerInput(current);
 
-    // check for win
-    if (current.winningState('X') == true) {
-      std::cout << "Game over, player X won the game!\n";
-      break;
-    }
+      // check for win
+      if (current.winningState('X') == true) {
+        std::cout << "Game over, player X won the game!\n";
+        break;
+      }
 
-    // check for draw
-    if (current.drawState() == true) {
-      std::cout << "Scratch game, no winner\n";
-      break;
+      // check for draw
+      if (current.drawState() == true) {
+        std::cout << "Scratch game, no winner\n";
+        break;
+      }
+      players_turn = false;
     }
   }
   current.draw();
